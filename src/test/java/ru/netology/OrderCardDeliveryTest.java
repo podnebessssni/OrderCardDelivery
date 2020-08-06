@@ -11,7 +11,7 @@ import static com.codeborne.selenide.Selectors.*;
 import static com.codeborne.selenide.Selenide.*;
 
 public class OrderCardDeliveryTest {
-    private int random_num = 0 + (int) (Math.random() * 15);
+    private int random_num = (int) (Math.random() * 15);
     LocalDate date = LocalDate.now();
     LocalDate bookingDate = date.plusDays(3 + random_num);
     private DateTimeFormatter formatDate = DateTimeFormatter.ofPattern("dd.MM.yyyy");
@@ -33,7 +33,7 @@ public class OrderCardDeliveryTest {
     void shouldReturnAlertMessageIfWrongCity(){
         open("http://localhost:9999");
         $("[data-test-id='city'] input").setValue("Лондон");
-        $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
+        $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE, formatDate.format(bookingDate));
         $("[data-test-id='date'] input").sendKeys(formatDate.format(bookingDate));
         $("[data-test-id='name'] input").setValue("Иван Грозный");
         $("[data-test-id='phone'] input").setValue("+79056487564");
@@ -87,14 +87,15 @@ public class OrderCardDeliveryTest {
     void shouldSearchFromCitiesWithTwoChars(){
         open("http://localhost:9999");
         $("[data-test-id='city'] input").sendKeys("ко");
-        $$(" .menu-item").get(4).click();
+        $$(" .menu-item").find(exactText("Кострома")).click();
         $(".input__icon").click();
         $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
         $("[data-test-id='date'] input").sendKeys(formatDate.format(bookingDate));
         $("[data-test-id='name'] input").setValue("Василий Иванов");
-        $("[data-test-id='phone'] input").setValue("+79056487564756");
+        $("[data-test-id='phone'] input").setValue("+79056487564");
         $("[data-test-id='agreement'] .checkbox__box").click();
         $(".button").click();
+        $(withText("Успешно!")).waitUntil(visible, 12000);
     }
 
     @Test
